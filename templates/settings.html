@@ -1,0 +1,16 @@
+<h2>Settings</h2>
+
+<form action="/PostSaveSettings" method="post">
+    <div class="form-spacing">
+      <label for="repoName" class="form-label">Repository Name</label>
+      <input type="text" class="form-control" id="repoName" name="repoName" value="{{ repoName }}">
+    </div>
+    <div class="form-spacing">
+      <label for="checkInterval" class="form-label">Update check interval (in seconds)</label>
+      <input type="text" class="form-control" id="checkInterval" name="checkInterval" value="{{ checkInterval }}">
+    </div>
+    <div class="d-flex flex-wrap justify-content-between">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="/" class="btn btn-secondary" role="button">Back</a>
+    </div>
+  </form>

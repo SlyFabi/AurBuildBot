@@ -1,0 +1,62 @@
+<h2>Packages</h2>
+
+<div class="d-flex flex-wrap justify-content-between" style="margin-top: 30px;">
+  <a href="/AddPackage" class="btn btn-primary" role="button">Add</a>
+
+  <form action="/PostRebuildAll" method="post" style="margin: 0px;">
+    <button type="submit" class="btn btn-warning">Rebuild all</button>
+  </form>
+</div>
+
+<table class="table table-striped table-hover" style="margin-top: 5px;">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Version</th>
+      <th scope="col">Last built</th>
+      <th scope="col">Status</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for pkg in packages %}
+    <tr>
+      <td>{{ pkg.Name }}</td>
+      <td>{{ pkg.Version }}</td>
+      <td>{{ pkg.LastBuildDate }}</td>
+      <td id="pkgStatus{{loop.index0}}"></td>
+
+      <script>
+        function updatePackageStatus{{loop.index0}}() {
+          $.ajax({
+            url: "/GetPackageStatus",
+            data: { name: "{{ pkg.Name }}" },
+            success: function (response) {
+                $('#pkgStatus{{loop.index0}}').text(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+            }
+          });
+        }
+
+        updatePackageStatus{{loop.index0}}();
+        window.setInterval(function () {
+          updatePackageStatus{{loop.index0}}();
+        }, 3000);
+      </script>
+
+      <td class="d-flex flex-row-reverse">
+        <form action="/PostRemovePackage" method="post" style="margin: 0px;">
+          <input type="hidden" id="name" name="name" value="{{ pkg.Name }}">
+          <button type="submit" class="btn btn-danger">Remove</button>
+        </form>
+        <form action="/PostRebuildPackage" method="post" style="margin: 0px; margin-right: 20px;">
+          <input type="hidden" id="name" name="name" value="{{ pkg.Name }}">
+          <button type="submit" class="btn btn-warning">Rebuild</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

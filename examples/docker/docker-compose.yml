@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  server:
+    build: ../..
+    image: slyfabi/aurbuildbot
+    container_name: aur-bot
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - aurbot:/home/buildbot
+      - ./config.cfg:/home/buildbot/.local/share/AurBuildBot/config.cfg
+      - ./makepkg.conf:/etc/makepkg.conf
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - default
+
+volumes:
+  aurbot:

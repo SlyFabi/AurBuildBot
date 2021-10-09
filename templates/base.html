@@ -1,0 +1,65 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href='/static/lib/css/bootstrap.min.css' />
+    <link rel="stylesheet" href='/static/lib/fontawesome/css/all.min.css' />
+    <link rel="stylesheet" href='/static/css/base.css' />
+
+	<script src="/static/lib/js/jquery-3.6.0.min.js"></script>
+	<script src="/static/lib/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/fontawesome/js/all.min.js"></script>
+</head>
+
+<header class="p-3 bg-dark text-white">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <h1 class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none" style="margin-right: 20px;">Aur Build Bot</h1>
+
+            <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="/" class="nav-link px-2 text-white">
+                        <i class="fas fa-home fa-2x d-block m-auto"></i>
+                        Home
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="/Settings" class="nav-link px-2 text-white">
+                        <i class="fas fa-cog fa-2x d-block m-auto"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="/Logs" class="nav-link px-2 text-white">
+                        <i class="fas fa-file-alt fa-2x d-block m-auto"></i>
+                        Logs
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<body>
+    <div class="container">
+        <main id="content" role="main" class="m-3">
+            {% if exception %}
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Error</h4>
+                <p>
+                    {{ exception }}
+                </p>
+            </div>
+            {% endif %}
+
+            {{ content }}
+        </main>
+    </div>
+</body>
+
+</html>

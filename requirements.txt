@@ -1,0 +1,6 @@
+Flask
+Flask-HTTPAuth
+Werkzeug
+waitress
+dataclasses-jsonschema
+requests

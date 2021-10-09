@@ -1,0 +1,36 @@
+<script>
+    function updateLogs() {
+        $.ajax({
+            url: "/GetLog",
+            data: { numLines: $('#numLinesInput').val() },
+            success: function (response) {
+                $('#logArea').text(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+            }
+        });
+
+         var $textarea = $('#logArea');
+        $textarea.scrollTop($textarea[0].scrollHeight);
+    }
+
+    $(document).ready(function(){
+        updateLogs();
+
+        window.setInterval(function () {
+            updateLogs();
+        }, 5000);
+    });
+</script>
+
+<h2>Logs</h2>
+
+    <div class="form-spacing">
+      <label for="numLinesInput" class="form-label">Number of last lines to show</label>
+      <input type="text" class="form-control" id="numLinesInput" name="numLinesInput" value="100">
+    </div>
+    <a href="javascript:updateLogs()" class="btn btn-primary" role="button">Update</a>
+
+<textarea id="logArea" style="width: 100%; margin-top: 30px;" rows="50" disabled>
+</textarea>
