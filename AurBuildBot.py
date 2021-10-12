@@ -1,11 +1,9 @@
 from flask import render_template, Markup, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from waitress import serve
-import atexit
 
 import Globals
 from Bot import Config
-from Utils import Logger
 
 from Controllers.IndexController import IndexController
 from Controllers.SettingsController import SettingsController
@@ -23,12 +21,11 @@ def render_base(page):
     return render_template('base.html', content=Markup(page))
 
 
-if not __debug__:
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        config = Config.get()
-        page = render_template('index.html', packages=config.Packages)
-        return render_template("base.html", content=Markup(page), exception=e), 500
+@app.errorhandler(Exception)
+def handle_exception(e):
+    config = Config.get()
+    page = render_template('index.html', packages=config.Packages)
+    return render_template("base.html", content=Markup(page), exception=e), 500
 
 
 @app.route('/<path:path>')
@@ -75,13 +72,6 @@ def settings():
 def logs():
     return render_base(render_template('logs.html'))
 
-
-def on_exit():
-    Logger.getLogger().info("Exiting...")
-    Globals.BOT.stop()
-
-
-atexit.register(on_exit)
 
 if __name__ == '__main__':
     Globals.BOT.start()

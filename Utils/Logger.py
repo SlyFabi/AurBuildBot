@@ -6,11 +6,10 @@ from Bot.Config import LOG_DIR
 
 # Setup existing loggers
 logging.root.setLevel(logging.NOTSET)
-if not __debug__:
-    logging.getLogger("requests").setLevel(logging.ERROR)
-    logging.getLogger('urllib3').setLevel(logging.ERROR)
-    logging.getLogger('werkzeug').setLevel(logging.ERROR)
-    logging.getLogger('waitress').setLevel(logging.ERROR)
+logging.getLogger("requests").setLevel(logging.ERROR)
+logging.getLogger('urllib3').setLevel(logging.ERROR)
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+logging.getLogger('waitress').setLevel(logging.ERROR)
 
 # Setup logger
 logFormatter = logging.Formatter("[%(asctime)s] %(message)s")

@@ -18,6 +18,8 @@ Default login credentials:
 
 ## Running manually ##
 
+Note: The user the bot is running with should have sudo rights without asking for a password.
+
 First you need the following dependencies
 
     pacman -S python python-pip
