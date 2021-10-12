@@ -45,6 +45,14 @@ class Config(JsonSchemaMixin):
     Packages: List[Package]
 
 
+def getRepoFiles():
+    config = get()
+    return [SERVER_ROOT_DIR + config.RepositoryName + '.db.tar.zst',
+            SERVER_ROOT_DIR + config.RepositoryName + '.db',
+            SERVER_ROOT_DIR + config.RepositoryName + '.files',
+            SERVER_ROOT_DIR + config.RepositoryName + '.files.tar.zst']
+
+
 def get():
     if Path(CONFIG_FILE).is_file():
         try:

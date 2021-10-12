@@ -84,6 +84,14 @@ class Bot:
     def __botThread(self):
         while self.__isRunning:
             config = Config.get()
+
+            # Update System
+            try:
+                if not self.__runBotCommand(['sudo', 'pacman', '-Syu', '--noconfirm']):
+                    raise Exception("Could not update system !")
+            except Exception as e:
+                logger.error(e)
+
             for pkg in config.Packages:
                 self.__setPackageStatus(pkg, PackageStatus.NOT_BUILT)
 
@@ -151,6 +159,7 @@ class Bot:
         cmd = Command.run(cmdList, workingDirectory=workingDirectory)
         while cmd.poll():
             if not self.__isRunning or self.__forceUpdate:
+                cmd.kill()
                 raise Exception("Aborted command !")
             time.sleep(0.1)
 
@@ -160,6 +169,7 @@ class Bot:
         cmd = Command.runBash(cmdStr, workingDirectory=workingDirectory)
         while cmd.poll():
             if not self.__isRunning or self.__forceUpdate:
+                cmd.kill()
                 raise Exception("Aborted command !")
             time.sleep(0.1)
 

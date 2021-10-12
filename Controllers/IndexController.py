@@ -1,10 +1,13 @@
 from flask import request, Blueprint, redirect
 from pathlib import Path
+
+import Utils.Utils
 from Bot.Bot import AurPackage, PackageStatus
 import shutil
 
 import Globals
 from Bot import Config
+from Utils import Utils
 
 IndexController = Blueprint('Index', __name__, template_folder='templates')
 
@@ -77,6 +80,11 @@ def fnRebuildPackage():
 def fnRemovePackage():
     pkgName = request.values['name']
     config = Config.get()
+
+    # Remove all packages
+    Utils.tryRemoveFiles(Config.getRepoFiles())
+    for pkg in config.Packages:
+        pkg.LastBuild = 0
 
     config.Packages = [pkg for pkg in config.Packages if pkg.Name != pkgName]
     Config.save(config)

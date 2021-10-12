@@ -1,42 +1,71 @@
 import os
 import time
-import subprocess
+from threading import Thread
+import asyncio
 
 from Utils import Logger
 
 
 class Command:
+    class SubprocessProtocol(asyncio.SubprocessProtocol):
+        def __init__(self, command):
+            self.__command = command
+            self.__transport = None
+
+        def connection_made(self, transport):
+            self.__transport = transport
+
+        def pipe_data_received(self, fd, data):
+            Logger.getLogger().debug(f'[Cmd {self.__command.cmd}]: ' + data.rstrip().decode('utf-8'))
+
+        def process_exited(self):
+            self.__command.exitCode = self.__transport.get_returncode()
+            Logger.getLogger().debug(f'[Cmd {self.__command.cmd}]: Exit ' + str(self.__command.exitCode))
+
+        def connection_lost(self, exc):
+            self.__command.loop.stop()
+
     def __init__(self, cmd, workingDirectory):
-        self.__cmd = cmd
-        self.__proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=workingDirectory)
+        self.cmd = cmd
+        self.workingDirectory = workingDirectory
+        self.isRunning = True
+        self.exitCode = 0
+
+        self.__thread = Thread(target=self.__runLoop)
+        self.__thread.daemon = True
+        self.__thread.start()
+
+    def __runLoop(self):
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+
+        try:
+            self.loop.run_until_complete(self.loop.subprocess_exec(lambda: Command.SubprocessProtocol(command=self),
+                                                                   *self.cmd, cwd=self.workingDirectory))
+            self.loop.run_forever()
+        finally:
+            self.loop.close()
+            self.isRunning = False
 
     def poll(self):
-        line = self.__proc.stdout.readline()
-        lineErr = self.__proc.stderr.readline()
-        if not line or not lineErr:
-            self.__proc.wait()
+        if not self.isRunning:
             return False
 
-        Logger.getLogger().debug(f'[Cmd {self.__cmd}]: ' + line.rstrip().decode('utf-8'))
         return True
 
     def getExitCode(self):
-        if self.__proc.poll() is None:
+        if self.isRunning:
             return False
 
-        output = self.__proc.stdout.read()
-        outputErr = self.__proc.stderr.read()
-
-        Logger.getLogger().debug(f'[Cmd {self.__cmd}]: ' + output.rstrip().decode('utf-8'))
-        Logger.getLogger().debug(f'[Cmd {self.__cmd}]: ' + outputErr.rstrip().decode('utf-8'))
-        Logger.getLogger().debug(f'[Cmd {self.__cmd}]: Exit code {self.__proc.returncode}')
-
-        return self.__proc.returncode
+        return self.exitCode
 
     def waitForExit(self):
         while self.poll():
             time.sleep(0.1)
         return self.getExitCode()
+
+    def kill(self):
+        self.loop.stop()
 
     @staticmethod
     def run(cmd, workingDirectory=os.getcwd()):

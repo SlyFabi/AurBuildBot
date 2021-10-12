@@ -1,4 +1,13 @@
 import subprocess
+import os
+
+
+def tryRemoveFiles(fileList):
+    for file in fileList:
+        try:
+            os.remove(file)
+        except OSError:
+            pass
 
 
 def tail(filePath, numLines):
